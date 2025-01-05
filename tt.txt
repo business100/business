@@ -1,58 +1,492 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Faculty of Technology</title>
-</head>
-<body>
-    
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
-        <div class="container-fluid">
-          <a class="navbar-brand" href="#">Home</a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          
-          <div class="collapse navbar-collapse" id="navbarNavDarkDropdown">
-            <ul class="navbar-nav">
-              <li class="nav-item dropdown">
-                <button class="nav-link dropdown-toggle active" data-bs-toggle="dropdown" aria-expanded="false">
-                  Departments
-                </button>
-                <ul class="dropdown-menu ">
-                  <li><a class="dropdown-item" href="#">ICT</a></li>
-                  <li><a class="dropdown-item" href="#">BST</a></li>
-                </ul>
-              </li>
-            </ul>
+Library Management System
+Save name ---->LibraryDemo.java
+
+import java.util.ArrayList;
+import java.util.Scanner;
+
+class Book {
+    private String title, author;
+    private boolean isAvailable = true;
+
+    public Book(String title, String author) {
+        this.title = title;
+        this.author = author;
+    }
+
+    public String getTitle() { return title; }
+    public boolean isAvailable() { return isAvailable; }
+
+    public void borrowBook() {
+        if (isAvailable) {
+            isAvailable = false;
+            System.out.println("Borrowed: " + title);
+        } else {
+            System.out.println("Not available.");
+        }
+    }
+
+    public void returnBook() {
+        isAvailable = true;
+        System.out.println("Returned: " + title);
+    }
+
+    @Override
+    public String toString() {
+        return "Title: " + title + ", Author: " + author + ", Available: " + (isAvailable ? "Yes" : "No");
+    }
+}
+
+class Library {
+    private ArrayList<Book> books = new ArrayList<>();
+
+    public void addBook(Book book) { books.add(book); }
+
+    public void displayBooks() {
+        for (Book book : books) {
+            System.out.println(book);
+        }
+    }
+
+    public Book findBook(String title) {
+        for (Book book : books) {
+            if (book.getTitle().equalsIgnoreCase(title)) return book;
+        }
+        return null;
+    }
+}
+
+public class LibraryDemo {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        Library library = new Library();
+
+        while (true) {
+            System.out.println("1. Add Book\n2. Display Books\n3. Borrow Book\n4. Return Book\n5. Exit");
+            int choice = scanner.nextInt(); scanner.nextLine();
+
+            if (choice == 1) {
+                System.out.print("Enter title: ");
+                String title = scanner.nextLine();
+                System.out.print("Enter author: ");
+                String author = scanner.nextLine();
+                library.addBook(new Book(title, author));
+            } else if (choice == 2) {
+                library.displayBooks();
+            } else if (choice == 3) {
+                System.out.print("Enter title to borrow: ");
+                Book book = library.findBook(scanner.nextLine());
+                if (book != null) book.borrowBook();
+                else System.out.println("Book not found.");
+            } else if (choice == 4) {
+                System.out.print("Enter title to return: ");
+                Book book = library.findBook(scanner.nextLine());
+                if (book != null) book.returnBook();
+                else System.out.println("Book not found.");
+            } else if (choice == 5) {
+                System.out.println("Goodbye!");
+                break;
+            } else {
+                System.out.println("Invalid choice.");
+            }
+        }
+
+        scanner.close();
+    }
+}
+
+
+---------------------------------------------------------------------------------------------------
+Time Management Program
+Save name ---->Time.java
+
+import java.util.Scanner;
+
+class Time {
+    private int hours, minutes, seconds;
+
+    public Time(int hours, int minutes, int seconds) {
+        this.hours = hours;
+        this.minutes = minutes;
+        this.seconds = seconds;
+        normalizeTime();
+    }
+
+    private void normalizeTime() {
+        minutes += seconds / 60;
+        seconds %= 60;
+        hours += minutes / 60;
+        minutes %= 60;
+    }
+
+    public void addTime(int additionalHours, int additionalMinutes, int additionalSeconds) {
+        hours += additionalHours;
+        minutes += additionalMinutes;
+        seconds += additionalSeconds;
+        normalizeTime();
+    }
+
+    public void subtractTime(int subtractedHours, int subtractedMinutes, int subtractedSeconds) {
+        int totalSeconds = (hours * 3600 + minutes * 60 + seconds) - (subtractedHours * 3600 + subtractedMinutes * 60 + subtractedSeconds);
+        if (totalSeconds < 0) totalSeconds = 0;
+        hours = totalSeconds / 3600;
+        minutes = (totalSeconds % 3600) / 60;
+        seconds = totalSeconds % 60;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // Input initial time
+        System.out.print("Enter initial hours: ");
+        int hours = scanner.nextInt();
+        System.out.print("Enter initial minutes: ");
+        int minutes = scanner.nextInt();
+        System.out.print("Enter initial seconds: ");
+        int seconds = scanner.nextInt();
+
+        Time time = new Time(hours, minutes, seconds);
+        System.out.println("Initial Time: " + time);
+
+        // Input time to add
+        System.out.print("Enter hours to add: ");
+        int addHours = scanner.nextInt();
+        System.out.print("Enter minutes to add: ");
+        int addMinutes = scanner.nextInt();
+        System.out.print("Enter seconds to add: ");
+        int addSeconds = scanner.nextInt();
+
+        time.addTime(addHours, addMinutes, addSeconds);
+        System.out.println("After Adding: " + time);
+
+        // Input time to subtract
+        System.out.print("Enter hours to subtract: ");
+        int subHours = scanner.nextInt();
+        System.out.print("Enter minutes to subtract: ");
+        int subMinutes = scanner.nextInt();
+        System.out.print("Enter seconds to subtract: ");
+        int subSeconds = scanner.nextInt();
+
+        time.subtractTime(subHours, subMinutes, subSeconds);
+        System.out.println("After Subtracting: " + time);
+
+        scanner.close();
+    }
+}
+
+--------------------------------------------------------------------------------------------------------------------------------------------------
+AddingNumbers program
+Save name ---->Time.java
+
+import java.util.Scanner;
+
+// Short Version: AddingNumbers Program with User Input
+
+class AddingNumbers {
+    protected int number1, number2;
+
+    public AddingNumbers(int number1, int number2) {
+        this.number1 = number1;
+        this.number2 = number2;
+    }
+
+    public void displayInputs() {
+        System.out.println("Number 1: " + number1 + ", Number 2: " + number2);
+    }
+}
+
+class AddingBinaryNumbers extends AddingNumbers {
+    public AddingBinaryNumbers(int number1, int number2) {
+        super(number1, number2);
+    }
+
+    public String addBinary() {
+        int sum = number1 + number2;
+        return Integer.toBinaryString(sum);
+    }
+}
+
+class AddingDecimalNumbers extends AddingNumbers {
+    public AddingDecimalNumbers(int number1, int number2) {
+        super(number1, number2);
+    }
+
+    public int addDecimal() {
+        return number1 + number2;
+    }
+}
+
+class MyEntry {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // Input for AddingBinaryNumbers
+        System.out.print("Enter first binary number: ");
+        int binary1 = Integer.parseInt(scanner.nextLine(), 2);
+        System.out.print("Enter second binary number: ");
+        int binary2 = Integer.parseInt(scanner.nextLine(), 2);
+
+        AddingBinaryNumbers binaryNumbers = new AddingBinaryNumbers(binary1, binary2);
+        binaryNumbers.displayInputs();
+        System.out.println("Binary Sum: " + binaryNumbers.addBinary());
+
+        // Input for AddingDecimalNumbers
+        System.out.print("Enter first decimal number: ");
+        int decimal1 = scanner.nextInt();
+        System.out.print("Enter second decimal number: ");
+        int decimal2 = scanner.nextInt();
+
+        AddingDecimalNumbers decimalNumbers = new AddingDecimalNumbers(decimal1, decimal2);
+        decimalNumbers.displayInputs();
+        System.out.println("Decimal Sum: " + decimalNumbers.addDecimal());
+
+        scanner.close();
+    }
+}
+
+---------------------------------------------------------------------------------------------------------------------------------
+Fun Game Program
+Save name ---->FunGame.java
+
+
+import java.util.Scanner;
+
+public class FunGame {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("*** Welcome to explore with Fun Game ***");
+        System.out.println("SELECT FROM THE MAIN MENU");
+        System.out.println("1. Print Hollow Mirrored Rhombus");
+        System.out.println("2. Reverse Your Name");
+        System.out.println("3. Find Vowels in Your Name");
+        System.out.println("4. Reverse a Number");
+        System.out.println("5. Reverse an Array");
+        System.out.println("6. GCD of Two Numbers");
+        System.out.print("Enter your choice (1-6): ");
+
+        int choice = scanner.nextInt();
+        scanner.nextLine(); // Consume the newline
+
+        switch (choice) {
+            case 1:
+                System.out.print("Enter number of rows: ");
+                int rows = scanner.nextInt();
+                System.out.print("Enter a symbol: ");
+                char symbol = scanner.next().charAt(0);
+                printHollowRhombus(rows, symbol);
+                break;
+
+            case 2:
+                System.out.print("Enter a String: ");
+                String inputString = scanner.nextLine();
+                System.out.println("The reverse of the input String is: " + reverseString(inputString));
+                break;
+
+            case 3:
+                System.out.print("Enter your Name: ");
+                String name = scanner.nextLine();
+                System.out.println("The vowels available in your name are: " + findVowels(name));
+                break;
+
+            case 4:
+                System.out.print("Enter a Number: ");
+                String number = scanner.nextLine();
+                if (isValidNumber(number)) {
+                    System.out.println("The reverse of your number is: " + reverseString(number));
+                } else {
+                    System.out.println("Invalid input! Please enter a valid number.");
+                }
+                break;
+
+            case 5:
+                System.out.print("Enter the size of the array: ");
+                int size = scanner.nextInt();
+                int[] array = new int[size];
+                System.out.println("Enter " + size + " values for the array:");
+                for (int i = 0; i < size; i++) {
+                    array[i] = scanner.nextInt();
+                }
+                System.out.print("The reversed array is: ");
+                reverseArray(array);
+                break;
+
+            case 6:
+                System.out.print("Enter the first number: ");
+                int num1 = scanner.nextInt();
+                System.out.print("Enter the second number: ");
+                int num2 = scanner.nextInt();
+                System.out.println("The GCD of " + num1 + " and " + num2 + " is: " + gcd(num1, num2));
+                break;
+
+            default:
+                System.out.println("Option not yet implemented or invalid choice!");
+        }
+
+        scanner.close();
+    }
+
+    public static void printHollowRhombus(int rows, char symbol) {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < rows - i - 1; j++) {
+                System.out.print(" ");
+            }
+            for (int j = 0; j < rows; j++) {
+                if (i == 0 || i == rows - 1 || j == 0 || j == rows - 1) {
+                    System.out.print(symbol);
+                } else {
+                    System.out.print(" ");
+                }
+            }
+            System.out.println();
+        }
+    }
+
+    public static String reverseString(String input) {
+        StringBuilder reversed = new StringBuilder(input);
+        return reversed.reverse().toString();
+    }
+
+    public static String findVowels(String input) {
+        StringBuilder vowels = new StringBuilder();
+        for (char c : input.toLowerCase().toCharArray()) {
+            if ("aeiou".indexOf(c) != -1) {
+                vowels.append(c).append(", ");
+            }
+        }
+        return vowels.length() > 0 ? vowels.substring(0, vowels.length() - 2) : "No vowels found";
+    }
+
+    public static boolean isValidNumber(String input) {
+        return input.matches("\\d+"); // Check if the input contains only digits
+    }
+
+    public static void reverseArray(int[] array) {
+        for (int i = array.length - 1; i >= 0; i--) {
+            System.out.print(array[i] + " ");
+        }
+        System.out.println();
+    }
+
+    public static int gcd(int a, int b) {
+        while (b != 0) {
+            int temp = b;
+            b = a % b;
+            a = temp;
+        }
+        return a;
+    }
+}
+
+
+
+
+------------------------------------------------------------------------------------------------------------------
+GUI ---> increment and decrement program
+save name ---> CounterApp.java
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class CounterApp {
+    public static void main(String[] args) {
+        // Create a counter variable
+        final int[] count = {0};
+
+        // Create JFrame and components
+        JFrame frame = new JFrame("Counter");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(300, 150);
+
+        // Create JLabel for displaying the counter
+        JLabel counterLabel = new JLabel("0");
+
+        // Create buttons for increment and decrement
+        JButton incrementButton = new JButton("Increment");
+        JButton decrementButton = new JButton("Decrement");
+
+        // ActionListener for increment button
+        incrementButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                count[0]++; // Increment counter
+                counterLabel.setText(String.valueOf(count[0])); // Update label
+            }
+        });
+
+        // ActionListener for decrement button
+        decrementButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                count[0]--; // Decrement counter
+                counterLabel.setText(String.valueOf(count[0])); // Update label
+            }
+        });
+
+        // Add components to the frame
+        frame.add(counterLabel);
+        frame.add(incrementButton);
+        frame.add(decrementButton);
+
+        // Set layout and bounds for manual positioning
+        frame.setLayout(null); // Use null layout for manual positioning
+        counterLabel.setBounds(150, 30, 100, 30);
+        incrementButton.setBounds(50, 80, 100, 30);
+        decrementButton.setBounds(150, 80, 100, 30);
+
+        // Make the frame visible
+        frame.setVisible(true);
+    }
+}
+
+
+----------------------------------------------------------------------------------------------------------------
+Hello World GUI
+save name ---> GuiExample.java
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class GuiExample {
+    public static void main(String[] args) {
+        // Create a new JFrame
+        JFrame frame = new JFrame("Welcome");
+        frame.setSize(300, 200);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        // Create a label and add it to the frame
+        JLabel label = new JLabel("Hello World!");
+        frame.add(label);
+
+        // Set the layout to null for absolute positioning
+        frame.setLayout(null);
+
+        // Create a button
+        JButton button = new JButton("Click Me");
         
-            <ul class="navbar-nav">
-              <li class="nav-item dropdown">
-                <button class="nav-link dropdown-toggle active" data-bs-toggle="dropdown" aria-expanded="false">
-                  Academics
-                </button>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="#">Staffs</a></li>
-                  <li><a class="dropdown-item" href="#">Students</a></li>
-                </ul>
-              </li>
-            </ul>
-          
-            <ul class="navbar-nav">
-              <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#">Non-Academic</a>
-              </li>
-            </ul>
-            <div class="d-grid gap-2 d-md-block">
-                <button class="btn btn-primary" type="submit">Login</button>
-                <button class="btn btn-primary" type="submit">Register</button>
-            </div>
-          </div>
-        </div>
-    </nav>
- 
-</body>
-</html>
+        // Add an action listener to the button
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                label.setText("Button clicked!"); // Change the text of the label when button is clicked
+            }
+        });
+
+        // Add the button to the frame
+        frame.add(button);
+
+        // Set bounds (position and size) for the label and button
+        label.setBounds(100, 50, 200, 30);
+        button.setBounds(80, 100, 100, 30);
+
+        // Make the frame visible
+        frame.setVisible(true);
+    }
+}
+
